@@ -1,3 +1,8 @@
-const chalk = require('chalk')
+const addTwo = (x) => x + 2
 
-console.log(chalk.red("Hello world"))
+const addTwoRandomly = (x) => x + Math.floor(Math.random() * 2) + 1
+
+module.exports = {
+    addTwo,
+    addTwoRandomly,
+}

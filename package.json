@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^2.4.1"
+    "jest": "^23.6.0"
   }
 }
