@@ -20,7 +20,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install JUnit coverage reporter
-          command: npm add --only=dev jest-junit
+          command: yarn add --only=dev jest-junit
       - run:
           name: Run tests with JUnit as reporter
           command: jest --ci --reporters=default --reporters=jest-junit
