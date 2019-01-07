@@ -23,7 +23,7 @@ jobs:
           command: yarn add --only=dev jest-junit
       - run:
           name: Run tests with JUnit as reporter
-          command: ./node_modules/jest/bin/jest.js --ci --reporters=default --reporters=jest-junit
+          command: yarn test -- --ci --reporters=default --reporters=jest-junit
           environment:
             JEST_JUNIT_OUTPUT: "test-results/jest/results.xml"
       - store_test_results:
