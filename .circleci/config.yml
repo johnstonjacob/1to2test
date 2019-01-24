@@ -29,5 +29,8 @@ jobs:
       - run:
           name: Sleep zzz
           command: sleep 30
+      - run:
+          name: Sleep zzz
+          command: sleep 30
       - store_test_results:
           path: test-results 
