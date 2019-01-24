@@ -28,6 +28,3 @@ jobs:
           command: yarn test -- --ci --reporters=default --reporters=jest-junit || true
       - store_test_results:
           path: test-results 
-      - run:
-          name: Rerun with SSH status test
-          command: sleep 2m
