@@ -54,8 +54,8 @@ workflows:
     version: 2
     hold-test:
         jobs:
-            - build
-            - deploy
+            - build:
+            - deploy:
                 requires:
                     - build
             - post-hold:
