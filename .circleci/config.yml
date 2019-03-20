@@ -56,6 +56,8 @@ workflows:
         jobs:
             - build
             - deploy
+                requires:
+                    - build
             - post-hold:
                 requires: 
                     - deploy
