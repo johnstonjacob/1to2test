@@ -61,4 +61,4 @@ workflows:
             - deploy
             - post-hold:
                 requires: 
-                    - hold
+                    - deploy
