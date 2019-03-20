@@ -42,16 +42,23 @@ jobs:
             - run: 
               name: Hold sleep
               command: sleep 4
+    deploy:
+        docker:
+            - image: circleci/node:7.10
+        working_directory: ~/repo
+
+        steps:
+            - checkout:
+            - run:
+                name: sleep
+                command: sleep 2m
 
 workflows:
     version: 2
     hold-test:
         jobs:
             - build
-            - hold:
-                type: approval
-                requires:
-                    - build
+            - deploy
             - post-hold:
                 requires: 
                     - hold
