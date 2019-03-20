@@ -41,7 +41,7 @@ jobs:
             - checkout:
             - run: 
               name: Hold sleep
-              command: sleep 3
+              command: sleep 4
 
 workflows:
     version: 2
