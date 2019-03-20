@@ -27,9 +27,6 @@ jobs:
           environment:
             JEST_JUNIT_OUTPUT: "test-results/jest/results.xml"
           command: yarn test -- --ci --reporters=default --reporters=jest-junit || true
-      - run:
-          name: deploy
-          command: sleep 2m
       - store_test_results:
           path: test-results 
     post-hold:
