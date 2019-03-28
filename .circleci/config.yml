@@ -4,6 +4,12 @@ orbs:
     disable-rerun: johnstonjacob/disable-rerun@0.0.1
 
 jobs:
+    rerun-check:
+        docker:
+            - image: circleci/python:3.7.2
+        steps:
+            - disable-rerun/check-build-ran
+            - disable-rerun/mark-build-ran
     build:
         docker:
             - image: circleci/node:11.12.0
@@ -17,8 +23,6 @@ jobs:
                     - v1-dependencies-{{ checksum "package.json" }}
                     - v1-dependencies-
             - run: yarn install
-            - disable-rerun/check-build-ran
-            - disable-rerun/mark-build-ran
             - save_cache:
                 paths:
                 - node_modules
@@ -51,8 +55,11 @@ workflows:
     version: 2
     hold-test:
         jobs:
-            - build:
+            - rerun-check:
                 context: ORB-PUBLISHING
+            - build:
+                requires:
+                    - rerun-check
             - hold:
                 type: approval
                 requires:
