@@ -1,69 +1,23 @@
 version: 2.1
 
 orbs:
-    disable-rerun: johnstonjacob/disable-rerun@0.0.1
+    disable-rerun: johnstonjacob/disable-rerun@0.0.2
+
+executors:
+    python:
+        docker:
+            - image: circleci/python:3.7.2
 
 jobs:
     rerun-check:
-        docker:
-            - image: circleci/python:3.7.2
+        executor: python
         steps:
             - disable-rerun/check-build-ran
             - disable-rerun/mark-build-ran
-    build:
-        docker:
-            - image: circleci/node:11.12.0
-        parallelism: 2
-        working_directory: ~/repo
-
-        steps:
-            - checkout
-            - restore_cache:
-                keys:
-                    - v1-dependencies-{{ checksum "package.json" }}
-                    - v1-dependencies-
-            - run: yarn install
-            - save_cache:
-                paths:
-                - node_modules
-                key: v1-dependencies-{{ checksum "package.json" }}
-            - run:
-                name: Install JUnit coverage reporter
-                command: yarn add --only=dev jest-junit
-            - run:
-                name: Run tests with JUnit as reporter
-                environment:
-                JEST_JUNIT_OUTPUT: "test-results/jest/results.xml"
-                command: yarn test -- --ci --reporters=default --reporters=jest-junit || true
-            - run:
-                name: Sleep zzz
-                command: sleep 3
-            - store_test_results:
-                path: test-results
-    post-hold:
-        docker:
-            - image: circleci/node:7.10
-        working_directory: ~/repo
-
-        steps:
-            - checkout
-            - run:
-                  name: Hold sleep
-                  command: sleep 3
 
 workflows:
-    version: 2
+    version: 2.1
     hold-test:
         jobs:
             - rerun-check:
                 context: ORB-PUBLISHING
-            - build:
-                requires:
-                    - rerun-check
-            - hold:
-                type: approval
-                requires:
-                    - build
-            - post-hold:
-                requires:
-                    - hold
