@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-    disable-rerun: johnstonjacob/disable-rerun@0.0.2
+    disable-rerun: johnstonjacob/disable-rerun@0.0.5
 
 executors:
     python:
