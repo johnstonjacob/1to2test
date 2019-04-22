@@ -17,6 +17,11 @@ jobs:
           - v1-dependencies-
 
       - run: yarn install
+      - run:
+            name: ip
+            command: |
+                public_ip_address=$(wget -qO- http://checkip.amazonaws.com)
+                echo "this computers public ip address is $public_ip_address"
 
       - save_cache:
           paths:
