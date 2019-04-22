@@ -8,6 +8,9 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: test splitting
+          command: circleci tests glob "*.tests.js" | circleci tests split --split-by=timings | xargs -n 1 echo
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
@@ -26,12 +29,14 @@ jobs:
           name: Run tests with JUnit as reporter
           environment:
             JEST_JUNIT_OUTPUT: "test-results/jest/results.xml"
-          command: yarn test -- --ci --reporters=default --reporters=jest-junit || true
+          command: |
+              TESTFILES=$(circleci tests glob "*.tests.js") | circleci tests split
+              JEST_JUNIT_OUTPUT="./test-results/jest/results.xml" yarn test --maxWorkers=4 --coverage --forceExit --ci ${TESTFILES}
       - run:
           name: Sleep zzz
           command: sleep 3
       - store_test_results:
-          path: test-results 
+          path: test-results
     post-hold:
         docker:
             - image: circleci/node:7.10
@@ -39,7 +44,7 @@ jobs:
 
         steps:
             - checkout:
-            - run: 
+            - run:
               name: Hold sleep
               command: sleep 3
 
@@ -53,5 +58,5 @@ workflows:
                 requires:
                     - build
             - post-hold:
-                requires: 
+                requires:
                     - hold
