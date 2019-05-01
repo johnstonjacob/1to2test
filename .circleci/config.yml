@@ -66,6 +66,7 @@ workflows:
     hold-test:
         jobs:
             - build
+            - fail-purpose
             - hold:
                 type: approval
                 requires:
