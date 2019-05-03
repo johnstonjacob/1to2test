@@ -1,5 +1,13 @@
 version: 2
 jobs:
+  test-api:
+      docker:
+          - image: circleci/node:7.10
+      working_directory: ~/repo
+      steps:
+          - run:
+                name: h
+                command: echo "Hello world"
   fail-purpose:
       docker:
           - image: circleci/node:7.10
