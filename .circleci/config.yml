@@ -78,7 +78,7 @@ workflows:
     nightly:
         triggers:
             - schedule:
-               cron: "0 5,10,18,20,25,30 * * *"
+               cron: "19,25,30 * * * *"
         jobs:
             - test-api
     hold-test:
