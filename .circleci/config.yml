@@ -38,7 +38,7 @@ references:
                         exit 0
                     else
                         exit 1
-                    end
+                    fi
 
 version: 2
 jobs:
