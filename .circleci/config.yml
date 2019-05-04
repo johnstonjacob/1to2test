@@ -30,7 +30,7 @@ references:
             - persist_to_workspace:
                 root: /tmp/workspace/
                 paths:
-                    - ./*
+                    - failed_jobs
             - run:
                 name: Exit if job failed
                 command: |
