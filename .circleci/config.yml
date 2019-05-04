@@ -34,12 +34,12 @@ jobs:
                 when: always
                 command: |
                     curl -X POST --header "Content-Type: application/json" -d '{
-                        "build_parameters": { // optional
+                        "build_parameters": {
                           "CIRCLE_JOB": "post-run",
-                          "ARTIFACT_BUILD_NUM": "$CIRCLE_BUILD_NUM"
+                          "ARTIFACT_BUILD_NUM": "'"$CIRCLE_BUILD_NUM"'"
                         }
                     }' \
-                    https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME?circle-token=$CIRCLE_TOKEN
+                    https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?circle-token=$CIRCLE_TOKEN
 
     post-run:
         <<: *default_config
