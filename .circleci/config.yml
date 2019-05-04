@@ -19,16 +19,26 @@ references:
                 command: node index.js > /tmp/workspace/random-id
                 name: Generate random ID
             - run:
-                command: node WillFailSometimes.js
+                command: |
+                        if node WillFailSometimes.js ; then
+                            export SUCCESS=true
+                        else
+                            echo $CIRCLE_JOB >> /tmp/workspace/failed_jobs
+                            export SUCCESS=false
+                        fi
                 name: Non-deterministic tests
-            - run:
-                when: on_fail
-                name: Store job failure
-                command: echo $CIRCLE_JOB >> /tmp/workspace/failed_jobs
             - persist_to_workspace:
                 root: /tmp/workspace/
                 paths:
                     - ./*
+            - run:
+                name: Exit if job failed
+                command: |
+                    if $SUCCESS; then
+                        exit 0
+                    else
+                        exit 1
+                    end
 
 version: 2
 jobs:
@@ -46,7 +56,7 @@ jobs:
             - run: sleep 1m
             - attach_workspace:
                 at: /tmp/workspace
-            - run: echo /tmp/workspace/failed_jobs
+            - run: cat /tmp/workspace/failed_jobs
     post-run:
         <<: *default_config
         steps:
@@ -56,7 +66,7 @@ jobs:
 
 workflows:
     version: 2
-    trigger-2nd-job:
+    notify-failed-jobs:
         jobs:
             - build1:
                 context: DEV-CONTEXT
