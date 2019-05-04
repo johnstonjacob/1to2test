@@ -7,7 +7,9 @@ references:
     default_config: &default_config
         docker:
           - image: *base_image
+          - image: redis@sha256:54057dd7e125ca41afe526a877e8bd35ec2cdd33b9217e022ed37bdcf7d09673
         working_directory: *working_directory
+        parallelism: 2
 
 version: 2
 jobs:
@@ -20,10 +22,6 @@ jobs:
             - run:
                 command: node index.js > /tmp/workspace/random-id
                 name: Generate random ID
-            - persist_to_workspace:
-                root: /tmp/workspace
-                paths:
-                    - random-id
             - run:
                 command: node WillFailSometimes.js
                 name: Non-deterministic tests
