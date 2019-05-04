@@ -24,14 +24,14 @@ references:
                         if node WillFailSometimes.js ; then
                             echo 'export SUCCESS=true' >> $BASH_ENV
                         else
-                            echo $CIRCLE_JOB >> /tmp/workspace/failed/failed_jobs
+                            touch /tmp/workspace/failed/$CIRCLE_JOB
                             echo 'export SUCCESS=false' >> $BASH_ENV
                         fi
                 name: Non-deterministic tests
             - persist_to_workspace:
                 root: /tmp/workspace/
                 paths:
-                    - failed
+                    - failed/*
             - run:
                 name: Exit if job failed
                 command: |
@@ -58,7 +58,6 @@ jobs:
             - attach_workspace:
                 at: /tmp/workspace
             - run: ls /tmp/workspace
-            - run: cat /tmp/workspace/failed_jobs
     post-run:
         <<: *default_config
         steps:
