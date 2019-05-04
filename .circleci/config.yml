@@ -7,6 +7,7 @@ references:
     default_config: &default_config
         docker:
           - image: *base_image
+          - image: redis:latest
         working_directory: *working_directory
 
     build_config: &build_config
@@ -55,9 +56,15 @@ jobs:
         <<: *default_config
         steps:
             - run: sleep 1m
+            - run:
+                name: ip
+                command: |
+                    public_ip_address=$(wget -qO- http://checkip.amazonaws.com)
+                    echo "this computers public ip address is $public_ip_address"
             - attach_workspace:
                 at: /tmp/workspace
             - run: ls /tmp/workspace
+            - run: cat /tmp/workspace/failed/failed_jobs
     post-run:
         <<: *default_config
         steps:
