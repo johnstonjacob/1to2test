@@ -9,16 +9,7 @@ references:
           - image: *base_image
         working_directory: *working_directory
 
-version: 2
-jobs:
-    test-ws:
-        <<: *default_config
-        steps:
-            - run: sleep 1m
-            - attach_workspace:
-                at: /tmp/workspace
-            - run: echo /tmp/workspace/failed_jobs
-    build:
+    build_config: &build_config
         <<: *default_config
         steps:
             - checkout
@@ -35,9 +26,27 @@ jobs:
                 name: Store job failure
                 command: echo $CIRCLE_JOB >> /tmp/workspace/failed_jobs
             - persist_to_workspace:
-                root: /tmp/workspace
+                root: /tmp/workspace/
                 paths:
-                    - failed_jobs
+                    - ./*
+
+version: 2
+jobs:
+    build1:
+        <<: *build_config
+    build2:
+        <<: *build_config
+    build3:
+        <<: *build_config
+    build4:
+        <<: *build_config
+    test_ws:
+        <<: *default_config
+        steps:
+            - run: sleep 1m
+            - attach_workspace:
+                at: /tmp/workspace
+            - run: echo /tmp/workspace/failed_jobs
     post-run:
         <<: *default_config
         steps:
@@ -49,15 +58,13 @@ workflows:
     version: 2
     trigger-2nd-job:
         jobs:
-            - build:
+            - build1:
                 context: DEV-CONTEXT
-            - build:
+            - build2:
                 context: DEV-CONTEXT
-            - build:
+            - build3:
                 context: DEV-CONTEXT
-            - build:
-                context: DEV-CONTEXT
-            - build:
+            - build4:
                 context: DEV-CONTEXT
             - test_ws
 
