@@ -48,10 +48,6 @@ jobs:
         <<: *default_config
         steps:
             - run: sleep 1m
-            - attach_workspace:
-                at: /tmp/workspace
-            - run: ls /tmp/workspace
-            - run: cat /tmp/workspace/failed/failed_jobs
     post-run:
         <<: *default_config
         steps:
