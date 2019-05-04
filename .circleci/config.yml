@@ -7,38 +7,37 @@ references:
     default_config: &default_config
         docker:
           - image: *base_image
-          - image: redis@sha256:54057dd7e125ca41afe526a877e8bd35ec2cdd33b9217e022ed37bdcf7d09673
         working_directory: *working_directory
-        parallelism: 2
 
 version: 2
 jobs:
+    test-ws:
+        <<: *default_config
+        steps:
+            - run: sleep 1m
+            - attach_workspace:
+                at: /tmp/workspace
+            - run: echo /tmp/workspace/failed_jobs
     build:
         <<: *default_config
         steps:
             - checkout
-            - run:
-                command: mkdir /tmp/workspace
+            - attach_workspace:
+                at: /tmp/workspace
             - run:
                 command: node index.js > /tmp/workspace/random-id
                 name: Generate random ID
             - run:
                 command: node WillFailSometimes.js
                 name: Non-deterministic tests
-            - store_artifacts:
-                path: /tmp/workspace/random-id
-                destiation: random-id-artifact
             - run:
-                when: always
-                command: |
-                    curl -X POST --header "Content-Type: application/json" -d '{
-                        "build_parameters": {
-                          "CIRCLE_JOB": "post-run",
-                          "ARTIFACT_BUILD_NUM": "'"$CIRCLE_BUILD_NUM"'"
-                        }
-                    }' \
-                    https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/tree/$CIRCLE_BRANCH?circle-token=$CIRCLE_TOKEN
-
+                when: on_fail
+                name: Store job failure
+                command: echo $CIRCLE_JOB >> /tmp/workspace/failed_jobs
+            - persist_to_workspace:
+                root: /tmp/workspace
+                paths:
+                    - failed_jobs
     post-run:
         <<: *default_config
         steps:
@@ -52,4 +51,13 @@ workflows:
         jobs:
             - build:
                 context: DEV-CONTEXT
+            - build:
+                context: DEV-CONTEXT
+            - build:
+                context: DEV-CONTEXT
+            - build:
+                context: DEV-CONTEXT
+            - build:
+                context: DEV-CONTEXT
+            - test_ws
 
