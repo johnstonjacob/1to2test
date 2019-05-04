@@ -55,12 +55,12 @@ jobs:
     test_ws:
         <<: *default_config
         steps:
-            - run: sleep 1m
             - run:
                 name: ip
                 command: |
                     public_ip_address=$(wget -qO- http://checkip.amazonaws.com)
                     echo "this computers public ip address is $public_ip_address"
+            - run: sleep 1m
             - attach_workspace:
                 at: /tmp/workspace
             - run: ls /tmp/workspace
