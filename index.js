@@ -1,8 +1,4 @@
-const addTwo = (x) => x + 2
+const crypto = require("crypto");
+const id = crypto.randomBytes(20).toString('hex');
 
-const addTwoRandomly = (x) => x + Math.floor(Math.random() * 5) + 1
-
-module.exports = {
-    addTwo,
-    addTwoRandomly,
-}
+console.log(id)
