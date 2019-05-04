@@ -15,6 +15,7 @@ references:
             - checkout
             - attach_workspace:
                 at: /tmp/workspace
+            - run: mkdir -p /tmp/workspace/failed
             - run:
                 command: node index.js > /tmp/workspace/random-id
                 name: Generate random ID
@@ -23,14 +24,14 @@ references:
                         if node WillFailSometimes.js ; then
                             echo 'export SUCCESS=true' >> $BASH_ENV
                         else
-                            echo $CIRCLE_JOB >> /tmp/workspace/failed_jobs
+                            echo $CIRCLE_JOB >> /tmp/workspace/failed/failed_jobs
                             echo 'export SUCCESS=false' >> $BASH_ENV
                         fi
                 name: Non-deterministic tests
             - persist_to_workspace:
                 root: /tmp/workspace/
                 paths:
-                    - failed_jobs
+                    - failed
             - run:
                 name: Exit if job failed
                 command: |
