@@ -18,6 +18,11 @@ jobs:
   build:
       <<: *default_config
       steps:
+          - run:
+              command: openssl aes-256-cbc -d -in secret-env-cipher -k $KEY >> $BASH_ENV
+              name: Decrypt repo secrets
+          - run:
+              command: env
 
 
 workflows:
