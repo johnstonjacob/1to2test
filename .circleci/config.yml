@@ -14,13 +14,18 @@ references:
         environment:
             BASH_ENV: /root/.bashrc
 
+    setup_environment: &setup_environment
+        run:
+            name: setup environment
+            command: |
+                cd && touch $BASH_ENV
+                openssl aes-256-cbc -d -in secret-env-cipher -k $KEY >> $BASH_ENV
+
 jobs:
   build:
       <<: *default_config
       steps:
-          - run:
-              command: openssl aes-256-cbc -d -in secret-env-cipher -k $KEY >> $BASH_ENV
-              name: Decrypt repo secrets
+          - *setup_environment
           - run:
               command: env
 
