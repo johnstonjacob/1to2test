@@ -7,18 +7,25 @@ references:
     working_directory: &working_directory
         ~/proj
 
+    encrypted_directory: &encrypted_directory
+        /encrypted
+
     default_config: &default_config
         docker:
             - image: *base_image
         working_directory: *working_directory
+        environment:
+            BASH_ENV: /root/.bashrc
 
     setup_environment: &setup_environment
         run:
             name: setup environment
             command: |
-                echo $BASH_ENV
+                working_directory = *working_directory
+                encrypted_directory = *encrypted_directory
+                combined_directory = $working_directory$encrypted_directory
                 cd && touch $BASH_ENV
-                openssl aes-256-cbc -d -in secret-env-cipher -k $KEY >> $BASH_ENV
+                openssl aes-256-cbc -d -in $combined_directory/secret-env-cipher -k $KEY >> $BASH_ENV
 
 jobs:
   build:
