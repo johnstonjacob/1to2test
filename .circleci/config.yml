@@ -32,6 +32,7 @@ jobs:
   build:
       <<: *default_config
       steps:
+          - checkout
           - *setup_environment
           - run:
               command: env
