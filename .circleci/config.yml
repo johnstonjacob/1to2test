@@ -11,13 +11,12 @@ references:
         docker:
             - image: *base_image
         working_directory: *working_directory
-        environment:
-            BASH_ENV: /root/.bashrc
 
     setup_environment: &setup_environment
         run:
             name: setup environment
             command: |
+                echo $BASH_ENV
                 cd && touch $BASH_ENV
                 openssl aes-256-cbc -d -in secret-env-cipher -k $KEY >> $BASH_ENV
 
