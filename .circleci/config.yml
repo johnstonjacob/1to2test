@@ -1,98 +1,28 @@
 version: 2
-jobs:
-  test-api:
-      docker:
-          - image: circleci/node:7.10
-      working_directory: ~/repo
-      steps:
-          - run:
-                name: h
-                command: echo "Hello world"
-  fail-purpose:
-      docker:
-          - image: circleci/node:7.10
-      working_directory: ~/repo
-      steps:
-          - setup_remote_docker:
-          - run:
-              name: docker ps
-              command: docker ps
-          - run:
-              name: fail
-              command: exit 1
-  build:
-    docker:
-      - image: circleci/node:7.10
-    parallelism: 2
-    working_directory: ~/repo
 
-    steps:
-      - checkout
-      - run:
-          name: test splitting
-          command: circleci tests glob "*.tests.js" | circleci tests split --split-by=timings | xargs -n 1 echo
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+references:
+    base_image: &base_image
+        circleci/golang:latest
 
-      - run: yarn install
-      - run:
-            name: ip
-            command: |
-                public_ip_address=$(wget -qO- http://checkip.amazonaws.com)
-                echo "this computers public ip address is $public_ip_address"
+    working_directory: &working_directory
+        ~/proj
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-      - run:
-          name: Install JUnit coverage reporter
-          command: yarn add --only=dev jest-junit
-      - run:
-          name: Run tests with JUnit as reporter
-          environment:
-            JEST_JUNIT_OUTPUT: "test-results/jest/results.xml"
-          command: |
-              TESTFILES=$(circleci tests glob "*.tests.js") | circleci tests split
-              JEST_JUNIT_OUTPUT="./test-results/jest/results.xml" yarn test --maxWorkers=4 --coverage --forceExit --ci ${TESTFILES}
-      - run:
-          name: Sleep zzz
-          command: sleep 3m
-      - store_test_results:
-          path: test-results
-    post-hold:
+    default_config: &default_config
         docker:
-            - image: circleci/node:7.10
-        working_directory: ~/repo
+            - image: *base_image
+        working_directory: *working_directory
+        environment:
+            BASH_ENV: /root/.bashrc
 
-        steps:
-            - checkout:
-            - run:
-              name: Hold sleep
-              command: sleep 3
+jobs:
+  build:
+      <<: *default_config
+      steps:
+
 
 workflows:
     version: 2
-    nightly:
-        triggers:
-            - schedule:
-               cron: "3 3 3 3 3"
-               filters:
-                    branches:
-                        only:
-                        - master
-        jobs:
-            - test-api
-    hold-test:
+    decrypt:
         jobs:
             - build
-            - fail-purpose
-            - hold:
-                type: approval
-                requires:
-                    - build
-            - post-hold:
-                requires:
-                    - hold
+
