@@ -2,7 +2,7 @@ version: 2
 
 references:
     base_image: &base_image
-        circleci/golang:latest
+        circleci/golang:1.12-stretch
 
     working_directory: &working_directory
         ~/proj
