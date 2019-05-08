@@ -19,8 +19,7 @@ references:
         run:
             name: setup environment
             command: |
-                openssl aes-256-cbc -d -in ./encrypted/secrets_env_cipher -k $KEY >> $BASH_ENV
-                env
+                openssl aes-256-cbc -d -in ./encrypted/secrets_env_cipher -k "$KEY" >> $BASH_ENV
 
 jobs:
   build:
