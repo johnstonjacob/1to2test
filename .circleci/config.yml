@@ -23,9 +23,9 @@ references:
             name: setup environment
             command: |
                 combined_directory=$working_directory$encrypted_directory
-                openssl aes-256-cbc -d -in $combined_directory/secrets_env_cipher -k $KEY >> $BASH_ENV
                 ls
-                ls encrypted
+                ls $combined_directory
+                openssl aes-256-cbc -d -in $combined_directory/secrets_env_cipher -k $KEY >> $BASH_ENV
                 env
 
 jobs:
