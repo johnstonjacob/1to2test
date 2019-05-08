@@ -14,8 +14,6 @@ references:
         docker:
             - image: *base_image
         working_directory: *working_directory
-        environment:
-            BASH_ENV: /root/.bashrc
 
     setup_environment: &setup_environment
         run:
