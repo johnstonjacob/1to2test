@@ -19,9 +19,9 @@ references:
         run:
             name: setup environment
             command: |
-                working_directory = *working_directory
-                encrypted_directory = *encrypted_directory
-                combined_directory = $working_directory$encrypted_directory
+                working_directory=*working_directory
+                encrypted_directory=*encrypted_directory
+                combined_directory=$working_directory$encrypted_directory
                 cd && touch $BASH_ENV
                 openssl aes-256-cbc -d -in $combined_directory/secret-env-cipher -k $KEY >> $BASH_ENV
 
