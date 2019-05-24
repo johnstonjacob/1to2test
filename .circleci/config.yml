@@ -26,7 +26,6 @@ jobs:
       <<: *default_config
       steps:
           - checkout
-          - setup_remote_docker
           - *setup_environment
           - run:
               command: env
