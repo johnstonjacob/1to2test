@@ -39,4 +39,4 @@ workflows:
 
 notify:
     webhooks:
-        - url: $NOTIFY_WH
+        - url: https://hooks.slack.com/services/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
