@@ -40,8 +40,3 @@ workflows:
 notify:
     webhooks:
         - url: $NOTIFY_WH
-    branches:
-        only:
-            - master
-
-
