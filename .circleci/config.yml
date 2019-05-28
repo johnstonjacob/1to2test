@@ -37,11 +37,12 @@ workflows:
         jobs:
             - build
 
-notify:
-    webhooks:
-        - url: $NOTIFY_WH
-    branches:
-        only:
-            - master
+experimental:
+    notify:
+        webhooks:
+            - url: $NOTIFY_WH
+        branches:
+            only:
+                - master
 
 
