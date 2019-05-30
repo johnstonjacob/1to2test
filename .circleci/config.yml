@@ -28,7 +28,6 @@ jobs:
       <<: *default_config
       steps:
           - checkout
-          - setup_remote_docker
           - run: sleep 5m
             # - *setup_environment
           - run:
