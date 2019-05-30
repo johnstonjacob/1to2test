@@ -28,8 +28,11 @@ jobs:
       <<: *default_config
       steps:
           - checkout
-          - run: sleep 5m
             # - *setup_environment
+          - run: modinfo ena
+          - run: ip link show
+          - run: ethtool -i ens5
+            #- run: sleep 5m
           - run:
               command: env
 
