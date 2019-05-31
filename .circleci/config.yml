@@ -31,10 +31,9 @@ jobs:
     steps:
         - checkout:
         - setup_remote_docker
-        - run: ssh remote-docker
-        - run: modinfo ena
-        - run: ip link show
-        - run: ethtool -i ens5
+        - run: ssh remote-docker "modinfo ena"
+        - run: ssh remote-docker "ip link show"
+        - run: ssh remote-docker "ethtool -i ens5"
         - run: sleep 5m
   machine:
       <<: *default_config
