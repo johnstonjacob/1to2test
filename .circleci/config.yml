@@ -1,8 +1,8 @@
 version: 2
 
 references:
-    #    base_image: &base_image
-    #    circleci/golang:1.12-stretch
+    base_image: &base_image
+        circleci/golang:1.12-stretch
 
     working_directory: &working_directory
         ~/proj
@@ -24,7 +24,19 @@ references:
                 openssl aes-256-cbc -d -in ./encrypted/secrets_env_cipher -k "$KEY" >> $BASH_ENV
 
 jobs:
-  build:
+  rmt-docker:
+    docker:
+        - image: *base_image
+    working_directory: *working_directory
+    steps:
+        - checkout:
+        - setup_remote_docker
+        - run: ssh remote-docker
+        - run: modinfo ena
+        - run: ip link show
+        - run: ethtool -i ens5
+        - run: sleep 5m
+  machine:
       <<: *default_config
       steps:
           - checkout
@@ -41,5 +53,6 @@ workflows:
     version: 2
     decrypt:
         jobs:
-            - build
+            - machine
+            - rmt-docker
 
