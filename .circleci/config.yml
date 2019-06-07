@@ -36,48 +36,45 @@ references:
 
 jobs:
   rmt-docker:
-      <<: *default_config
+      <<: *rmt
   rmt-docker2:
-      <<: *default_config
-
+      <<: *rmt
   rmt-docker3:
-      <<: *default_config
-
+      <<: *rmt
   rmt-docker4:
-      <<: *default_config
-
+      <<: *rmt
   rmt-docker5:
-      <<: *default_config
+      <<: *rmt
   rmt-docker6:
-      <<: *default_config
+      <<: *rmt
   rmt-docker7:
-      <<: *default_config
+      <<: *rmt
   rmt-docker8:
-      <<: *default_config
+      <<: *rmt
   rmt-docker9:
-      <<: *default_config
+      <<: *rmt
   rmt-docker10:
-      <<: *default_config
+      <<: *rmt
   rmt-docker11:
-      <<: *default_config
+      <<: *rmt
   rmt-docker12:
-      <<: *default_config
+      <<: *rmt
   rmt-docker13:
-      <<: *default_config
+      <<: *rmt
   rmt-docker14:
-      <<: *default_config
+      <<: *rmt
   rmt-docker15:
-      <<: *default_config
+      <<: *rmt
   rmt-docker16:
-      <<: *default_config
+      <<: *rmt
   rmt-docker17:
-      <<: *default_config
+      <<: *rmt
   rmt-docker18:
-      <<: *default_config
+      <<: *rmt
   rmt-docker19:
-      <<: *default_config
+      <<: *rmt
   rmt-docker20:
-      <<: *default_config
+      <<: *rmt
 
   machine:
       <<: *default_config
