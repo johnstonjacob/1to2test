@@ -27,7 +27,7 @@ references:
             - image: *base_image
         working_directory: *working_directory
         steps:
-            - checkout:
+            - checkout
             - setup_remote_docker
             - run: ssh remote-docker "modinfo ena"
             - run: ssh remote-docker "ip link show"
