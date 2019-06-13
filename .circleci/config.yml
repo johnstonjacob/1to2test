@@ -22,60 +22,8 @@ references:
             name: setup environment
             command: |
                 openssl aes-256-cbc -d -in ./encrypted/secrets_env_cipher -k "$KEY" >> $BASH_ENV
-    rmt: &rmt
-        docker:
-            - image: *base_image
-        working_directory: *working_directory
-        steps:
-            - checkout
-            - setup_remote_docker
-            - run: ssh remote-docker "modinfo ena"
-            - run: ssh remote-docker "ip link show"
-            - run: ssh remote-docker "ethtool -i ens5"
-            - run: sleep 5m
 
 jobs:
-  rmt-docker:
-      <<: *rmt
-  rmt-docker2:
-      <<: *rmt
-  rmt-docker3:
-      <<: *rmt
-  rmt-docker4:
-      <<: *rmt
-  rmt-docker5:
-      <<: *rmt
-  rmt-docker6:
-      <<: *rmt
-  rmt-docker7:
-      <<: *rmt
-  rmt-docker8:
-      <<: *rmt
-  rmt-docker9:
-      <<: *rmt
-  rmt-docker10:
-      <<: *rmt
-  rmt-docker11:
-      <<: *rmt
-  rmt-docker12:
-      <<: *rmt
-  rmt-docker13:
-      <<: *rmt
-  rmt-docker14:
-      <<: *rmt
-  rmt-docker15:
-      <<: *rmt
-  rmt-docker16:
-      <<: *rmt
-  rmt-docker17:
-      <<: *rmt
-  rmt-docker18:
-      <<: *rmt
-  rmt-docker19:
-      <<: *rmt
-  rmt-docker20:
-      <<: *rmt
-
   machine:
       <<: *default_config
       steps:
@@ -94,24 +42,3 @@ workflows:
     decrypt:
         jobs:
             - machine
-            - rmt-docker
-            - rmt-docker2
-            - rmt-docker3
-            - rmt-docker4
-            - rmt-docker5
-            - rmt-docker6
-            - rmt-docker7
-            - rmt-docker8
-            - rmt-docker9
-            - rmt-docker10
-            - rmt-docker11
-            - rmt-docker12
-            - rmt-docker13
-            - rmt-docker13
-            - rmt-docker14
-            - rmt-docker15
-            - rmt-docker16
-            - rmt-docker17
-            - rmt-docker18
-            - rmt-docker19
-            - rmt-docker20
