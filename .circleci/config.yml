@@ -7,51 +7,23 @@ references:
     working_directory: &working_directory
         ~/proj
 
-    encrypted_directory: &encrypted_directory
-        /encrypted
-
     default_config: &default_config
-    #    docker:
-    #        - image: *base_image
-        machine:
-            docker_layer_caching: true
+        docker:
+            - image: *base_image
         working_directory: *working_directory
 
-    setup_environment: &setup_environment
-        run:
-            name: setup environment
-            command: |
-                openssl aes-256-cbc -d -in ./encrypted/secrets_env_cipher -k "$KEY" >> $BASH_ENV
-
 jobs:
-  rmt-docker:
-    docker:
-        - image: *base_image
-    working_directory: *working_directory
-    steps:
-        - checkout:
-        - setup_remote_docker
-        - run: ssh remote-docker "modinfo ena"
-        - run: ssh remote-docker "ip link show"
-        - run: ssh remote-docker "ethtool -i ens5"
-        - run: sleep 5m
-  machine:
-      <<: *default_config
-      steps:
-          - checkout
-            # - *setup_environment
-          - run: modinfo ena
-          - run: ip link show
-          - run: ethtool -i ens5
-            #- run: sleep 5m
-          - run:
-              command: env
-
+    build:
+        docker:
+            - image: *base_image
+        working_directory: *working_directory
+        steps:
+            - checkout:
+            - run: sleep 5m
 
 workflows:
     version: 2
-    decrypt:
+    btd:
         jobs:
-            - machine
-            - rmt-docker
+            - build
 
