@@ -19,7 +19,8 @@ jobs:
         working_directory: *working_directory
         steps:
             - checkout:
-            - run: sleep 5m
+            - command: echo "hello"
+
 
 workflows:
     version: 2
