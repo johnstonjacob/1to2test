@@ -18,9 +18,11 @@ jobs:
             - image: *base_image
         working_directory: *working_directory
         steps:
-            - checkout:
-            - run: echo "hello"
-            - run: go run main.go
+            - checkout
+            - run:
+                command: echo "hello"
+            - run:
+                command: go run main.go
 
 
 workflows:
