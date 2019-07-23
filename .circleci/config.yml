@@ -19,8 +19,8 @@ jobs:
         working_directory: *working_directory
         steps:
             - checkout:
-            - command: echo "hello"
-            - command: go run main.go
+            - run: echo "hello"
+            - run: go run main.go
 
 
 workflows:
