@@ -24,11 +24,11 @@ jobs:
         <<: *mac_config
         steps:
             - checkout
-            - run:
-                  name: Delete unused Simulators
-                  command: |
-                    xcrun simctl list devices | grep -v '^[-=]' | sed -E 's/\(.+inch+\)|\(.+generation+\)|\(.+1080p+\)//g' | grep -v 'iPhone 6' | cut -d "(" -f2 | cut -d ")" -f1 | xargs -I {} xcrun simctl delete "{}"
-                    sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
+              #- run:
+              #    name: Delete unused Simulators
+              #    command: |
+              #      xcrun simctl list devices | grep -v '^[-=]' | sed -E 's/\(.+inch+\)|\(.+generation+\)|\(.+1080p+\)//g' | grep -v 'iPhone 6' | cut -d "(" -f2 | cut -d ")" -f1 | xargs -I {} xcrun simctl delete "{}"
+              #      sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
             - run:
                 name: Delete unused Simulators
                 command: xcrun simctl list devices | grep -v '^[-=]' | sed -E 's/\(.+inch+\)|\(.+generation+\)|\(.+1080p+\)//g' | grep -v 'iPhone 6' | cut -d "(" -f2 | cut -d ")" -f1 | xargs -I {} xcrun simctl delete "{}" | sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
