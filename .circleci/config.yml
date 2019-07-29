@@ -15,8 +15,8 @@ references:
     mac_config: &mac_config
         macos:
           xcode: "10.1.0"
-          shell: /bin/bash --login
         working_directory: *working_directory
+        #shell: /bin/bash --login
 
 
 jobs:
