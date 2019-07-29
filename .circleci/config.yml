@@ -12,18 +12,23 @@ references:
             - image: *base_image
         working_directory: *working_directory
 
+    mac_config: &mac_config
+        macos:
+          xcode: "10.1.0"
+          shell: /bin/bash --login
+        working_directory: *working_directory
+
+
 jobs:
     build:
-        docker:
-            - image: *base_image
-        working_directory: *working_directory
+        <<: *mac_config
         steps:
             - checkout
             - run:
-                command: echo "hello"
-            - run:
-                command: go run main.go
-
+                  name: Delete unused Simulators
+                  command: |
+                    xcrun simctl list devices | grep -v '^[-=]' | sed -E 's/\(.+inch+\)|\(.+generation+\)|\(.+1080p+\)//g' | grep -v 'iPhone 6' | cut -d "(" -f2 | cut -d ")" -f1 | xargs -I {} xcrun simctl delete "{}"
+                    sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
 
 workflows:
     version: 2
