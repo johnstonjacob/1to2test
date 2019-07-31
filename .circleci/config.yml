@@ -18,6 +18,10 @@ references:
         working_directory: *working_directory
         shell: /bin/bash --login
 
+parameters:
+    trigger_nightly:
+        type: boolean
+        default: false
 
 jobs:
     build:
@@ -34,6 +38,7 @@ workflows:
     nightly:
         jobs:
             - build
+        when: << pipeline.parameters.trigger_nightly >>
         triggers:
             - schedule:
                 cron: "0 0 * * *"
