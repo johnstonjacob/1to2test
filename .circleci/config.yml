@@ -31,6 +31,9 @@ workflows:
     btd:
         jobs:
             - build
+    nightly:
+        jobs:
+            - build
         triggers:
             - schedule:
                 cron: "0 0 * * *"
