@@ -33,6 +33,7 @@ jobs:
 
 workflows:
     btd:
+        unless: << pipeline.parameters.trigger_nightly >>
         jobs:
             - build
     nightly:
