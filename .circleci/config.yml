@@ -24,7 +24,7 @@ jobs:
         <<: *default_config
         steps:
             - checkout
-            - run: "Hello World!"
+            - run: echo "Hello World!"
 
 
 workflows:
