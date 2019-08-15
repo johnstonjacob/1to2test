@@ -7,25 +7,31 @@ references:
     working_directory: &working_directory
         ~/proj
 
-    default_config: &default_config
-        docker:
-            - image: *base_image
-        working_directory: *working_directory
-
-    mac_config: &mac_config
-        macos:
-          xcode: "10.1.0"
-        working_directory: *working_directory
-        shell: /bin/bash --login
-
 parameters:
     trigger_nightly:
         type: boolean
         default: false
 
+executors:
+    default:
+        docker:
+            - image: *base_image
+        working_directory: *working_directory
+    macos:
+        macos:
+            xcode: "10.1.0"
+        working_directory: *working_directory
+        shell: /bin/bash --login
+    windows:
+        machine:
+            resource_class: windows.medium
+            image: "windows-server-2019:201908-06"
+            shell: bash
+
+
 jobs:
     build:
-        <<: *default_config
+        executor: windows
         steps:
             - checkout
             - run: echo "Hello World!"
@@ -37,12 +43,6 @@ workflows:
         jobs:
             - build
     nightly:
+        when: << pipeline.parameters.trigger_nightly >>
         jobs:
             - build
-        when: << pipeline.parameters.trigger_nightly >>
-        triggers:
-            - schedule:
-                cron: "0 0 * * *"
-                filters:
-                    branches:
-                        only: master
