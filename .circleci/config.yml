@@ -1,48 +1,227 @@
-version: 2.1
+defaults: &defaults
+  docker:
+    - image: docker:17.05.0-ce-git
 
-references:
-    base_image: &base_image
-        circleci/golang:1.12-stretch
-
-    working_directory: &working_directory
-        ~/proj
-
-parameters:
-    trigger_nightly:
-        type: boolean
-        default: false
-
-executors:
-    default:
-        docker:
-            - image: *base_image
-        working_directory: *working_directory
-    macos:
-        macos:
-            xcode: "10.1.0"
-        working_directory: *working_directory
-        shell: /bin/bash --login
-    windows:
-        machine:
-            resource_class: windows.medium
-            image: "windows-server-2019:201908-06"
-            shell: bash
-
+version: 2
 
 jobs:
-    build:
-        executor: windows
-        steps:
-            - checkout
-            - run: echo "Hello World!"
+  pre-checkout:
+    <<: *defaults
+    steps:
+      - checkout
 
+      - run:
+          name: Validate commit in master
+          command: |
+            git branch -r --contains $CIRCLE_SHA1 | grep origin/master
+            if [ $? -ne 0 ]; then
+                echo "El commit $CIRCLE_SHA1 no se encuentra en master"
+                exit 1
+            fi
+      - run:
+          name: Validate last commit
+          command: |
+            git log -n 1 origin/master | grep $CIRCLE_SHA1
+            if [ $? -ne 0 ]; then
+                echo "El commit $CIRCLE_SHA1 no es el ultimo commit en master."
+                exit 1
+            fi
+
+  run-tests:
+    docker:
+      - image: circleci/golang:1.8
+
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Run tests
+          command: |
+            docker-compose run fury-instance-proxy
+            cd $GOPATH/src/github.com/fury-instance-proxy
+            go test -v  $(go list ./... | grep -v /vendor/)
+
+  prepare-stage-environment:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - run: mkdir -p workspace
+
+      - run:
+          command: |
+            sed -i -e "s/##VERSION##/$CIRCLE_TAG/" deploy/docker-compose.yml.tpl
+            sed -i -e "s/##DATADOG_API_KEY##/$DATADOG_API_KEY/" deploy/docker-compose.yml.tpl
+            sed -i -e "s/##ENVIRONMENT##/stage/" deploy/docker-compose.yml.tpl
+            mv deploy/docker-compose.yml.tpl workspace/docker-compose.yml.tpl
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - docker-compose.yml.tpl
+
+  prepare-production-enviorment:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - run: mkdir -p workspace
+
+      - run:
+          name: Build
+          command: |
+            sed -i -e "s/##VERSION##/$CIRCLE_TAG/" deploy/docker-compose.yml.tpl
+            sed -i -e "s/##DATADOG_API_KEY##/$DATADOG_API_KEY/" deploy/docker-compose.yml.tpl
+            sed -i -e "s/##ENVIRONMENT##/production/" deploy/docker-compose.yml.tpl
+            mv deploy/docker-compose.yml.tpl workspace/docker-compose.yml.tpl
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - docker-compose.yml.tpl
+
+  build-and-push:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run:
+          name: Move docker-compose
+          command: |
+            mv /tmp/workspace/docker-compose.yml.tpl deploy/docker-compose.yml.tpl
+      - run:
+          name: Docker login and dockerfiles
+          command: |
+            docker login -e arquitectura@mercadolibre.com -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+            if [ $? -ne 0 ]; then
+                echo 'Hubo un error haciendo el login a docker, abortando corrida'
+                exit 1
+            fi
+      - run:
+          name: Build
+          command: |
+            docker build -t mercadolibre/fury-instance-proxy:$CIRCLE_TAG .
+            if [ $? -ne 0 ]; then
+                echo 'Hubo un error buildeando, abortando corrida'
+                exit 1
+            fi
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache bash py-pip
+            pip install awscli
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_REGION
+            aws configure set default.output json
+      - run:
+          name: Push
+          command: |
+            docker push mercadolibre/fury-instance-proxy:$CIRCLE_TAG
+            if [ $? -ne 0 ]; then
+                echo 'Hubo un error pusheando, abortando corrida'
+                exit 1
+            fi
+      - run:
+          name: Upload to S3
+          command: |
+            cd deploy/
+            tar zcvf deploy.tar.gz *
+            if [[ "$CIRCLE_TAG" =~ ^feature-.* ]]; then
+              aws s3 cp deploy.tar.gz s3://fury-core-codeploy/fury-instance-proxy/features/fury-instance-proxy-$CIRCLE_TAG.tar.gz
+            elif [[ "$CIRCLE_TAG" =~ ^release-.* ]]; then
+              aws s3 cp deploy.tar.gz s3://fury-core-codeploy/fury-instance-proxy/releases/fury-instance-proxy-$CIRCLE_TAG.tar.gz
+            fi
+
+  validate-tag:
+    <<: *defaults
+    steps:
+      - run:
+          name: Validate that the tag is feature or release
+          command: |
+            echo "The tag must be feature for stage or release for production"
+            exit 1
 
 workflows:
-    btd:
-        unless: << pipeline.parameters.trigger_nightly >>
-        jobs:
-            - build
-    nightly:
-        when: << pipeline.parameters.trigger_nightly >>
-        jobs:
-            - build
+    version: 2
+
+  validate-commit:
+    jobs:
+      - run-tests
+
+  production-environment:
+      jobs:
+        - pre-checkout:
+            filters:
+              tags:
+                only: /^release-.+/
+              branches:
+                ignore: /.*/
+
+        - login:
+            requires:
+              - pre-checkout
+            filters:
+              tags:
+                only: /^release-.+/
+              branches:
+                ignore: /.*/
+
+        - run-tests:
+            requires:
+              - login
+            filters:
+              tags:
+                only: /^release-.+/
+              branches:
+                ignore: /.*/
+
+        - build-and-push-production:
+            requires:
+              - run-tests
+            filters:
+              tags:
+                only: /^release-.+/
+              branches:
+                ignore: /.*/
+
+    stage-environment:
+      jobs:
+        - pre-checkout:
+            filters:
+              tags:
+                only: /^feature-.+/
+              branches:
+                ignore: /.*/
+
+        - login:
+            requires:
+              - pre-checkout
+            filters:
+              tags:
+                only: /^feature-.+/
+              branches:
+                ignore: /.*/
+
+        - build-and-push-stage:
+            requires:
+              - login
+            filters:
+              tags:
+                only: /^feature-.+/
+              branches:
+                ignore: /.*/
+
+  validate-invalid-tag:
+    jobs:
+      - validate-tag:
+          filters:
+            tags:
+              ignore: /^(feature-|release-).+/
+            branches:
+              ignore: /.*/
