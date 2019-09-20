@@ -39,11 +39,11 @@ jobs:
       - checkout
       - run: echo "Hello World!"
       - run:
-        name: Take A Screenshot
-        command: screencapture screen.png
-        when: always
+          name: Take A Screenshot
+          command: screencapture screen.png
+          when: always
       - store_artifacts:
-        path: screen.png
+          path: screen.png
   test:
     executor: default
     steps:
