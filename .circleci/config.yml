@@ -82,7 +82,7 @@ workflows:
         - nightly_image_build
       triggers:
         - schedule:
-            cron: "28 18 * * *"
+            cron: "29 18 * * *"
             filters:
               branches:
                 only:
