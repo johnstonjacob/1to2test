@@ -79,13 +79,13 @@ workflows:
         - e2e_test
     nightly:
       jobs:
-        - echo
+        - echo:
             context: TEST
         - test
         - nightly_image_build
       triggers:
         - schedule:
-            cron: "18 25 * * *"
+            cron: "18 26 * * *"
             filters:
               branches:
                 only:
