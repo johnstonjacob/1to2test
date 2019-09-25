@@ -79,11 +79,12 @@ workflows:
     nightly:
       jobs:
         - echo
+            context: TEST
         - test
         - nightly_image_build
       triggers:
         - schedule:
-            cron: "18 23 * * *"
+            cron: "18 25 * * *"
             filters:
               branches:
                 only:
