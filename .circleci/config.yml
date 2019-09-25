@@ -76,13 +76,13 @@ workflows:
         - e2e_test
     nightly:
       jobs:
-        - echo:
-            context: TEST
+        - echo
         - test
-        - nightly_image_build
+        - nightly_image_build:
+            context: TEST
       triggers:
         - schedule:
-            cron: "29 18 * * *"
+            cron: "33 18 * * *"
             filters:
               branches:
                 only:
