@@ -61,9 +61,6 @@ jobs:
       - run: echo "Build test Docker images"
       - run: echo $HELLO
 
-
-
-
 # Multiple workflows defined with different triggers. `btd` triggers on commit, `e2e` triggers on an API call with the `trigger_e2e` parameter set to true, and `nightly` is triggered on a scheduled cron timer.
 # https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -85,7 +82,7 @@ workflows:
         - nightly_image_build
       triggers:
         - schedule:
-            cron: "18 26 * * *"
+            cron: "28 18 * * *"
             filters:
               branches:
                 only:
