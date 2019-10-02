@@ -36,8 +36,13 @@ jobs:
     executor: macos
     steps:
       - checkout
-      - run: echo "Hello World!"
-      - run: echo $PROMPT_COMMAND
+      - run: export $PROMPT_COMMAND
+      - run: ./test.sh
+  compare:
+    executor: macos
+    steps:
+      - checkout
+      - run: ./test.sh
   test:
     executor: default
     steps:
@@ -61,3 +66,4 @@ workflows:
     btd:
       jobs:
         - echo
+        - compare
