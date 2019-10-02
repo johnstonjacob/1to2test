@@ -33,8 +33,6 @@ executors:
 
 jobs:
   echo:
-    environment:
-      PROMPT_COMMAND: ""
     executor: macos
     steps:
       - checkout
@@ -46,6 +44,9 @@ jobs:
       - run: ./test.sh
   test:
     executor: default
+    environment:
+      PROMPT_COMMAND: ""
+      RUBY_AUTO_VERSION: ""
     steps:
       - checkout
       - run: echo "Tests"
