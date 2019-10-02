@@ -33,10 +33,11 @@ executors:
 
 jobs:
   echo:
+    environment:
+      PROMPT_COMMAND: ""
     executor: macos
     steps:
       - checkout
-      - run: export $PROMPT_COMMAND
       - run: ./test.sh
   compare:
     executor: macos
