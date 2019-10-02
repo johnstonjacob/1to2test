@@ -39,14 +39,14 @@ jobs:
       - run: ./test.sh
   compare:
     executor: macos
+    environment:
+      PROMPT_COMMAND: ""
+      RUBY_AUTO_VERSION: ""
     steps:
       - checkout
       - run: ./test.sh
   test:
     executor: default
-    environment:
-      PROMPT_COMMAND: ""
-      RUBY_AUTO_VERSION: ""
     steps:
       - checkout
       - run: echo "Tests"
