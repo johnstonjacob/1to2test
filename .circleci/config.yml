@@ -36,7 +36,9 @@ jobs:
     executor: macos
     steps:
       - checkout
+      - run: set
       - run: ./test.sh
+      - run: set
   compare:
     executor: macos
     environment:
