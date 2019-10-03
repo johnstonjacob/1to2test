@@ -41,7 +41,6 @@ jobs:
     executor: macos
     environment:
       PROMPT_COMMAND: ""
-      RUBY_AUTO_VERSION: "dirty"
     steps:
       - checkout
       - run: ./test.sh
