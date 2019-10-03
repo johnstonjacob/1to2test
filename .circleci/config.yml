@@ -41,7 +41,7 @@ jobs:
     executor: macos
     environment:
       PROMPT_COMMAND: ""
-      RUBY_AUTO_VERSION: ""
+      RUBY_AUTO_VERSION: "2.6.2"
     steps:
       - checkout
       - run: ./test.sh
