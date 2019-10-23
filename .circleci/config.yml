@@ -33,12 +33,10 @@ executors:
 
 jobs:
   echo:
-    executor: macos
+    executor: windows
     steps:
       - checkout
-      - run: set
-      - run: ./test.sh
-      - run: set
+      - run: sleep 100s
   compare:
     executor: macos
     environment:
@@ -69,4 +67,3 @@ workflows:
     btd:
       jobs:
         - echo
-        - compare
