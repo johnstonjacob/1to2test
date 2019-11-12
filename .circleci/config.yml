@@ -1,69 +1,32 @@
-version: 2.1
-# 2.1 overview - https://discuss.circleci.com/t/circleci-2-1-config-overview/26057
+version: 2
 
 references:
-  base_image: &base_image
-    circleci/golang:1.12-stretch
+    base_image: &base_image
+        circleci/golang:1.12-stretch
 
-  working_directory: &working_directory
-    ~/proj
+    working_directory: &working_directory
+        ~/proj
 
-# New in 2.1
-parameters:
-  trigger_e2e:
-    type: boolean
-    default: false
-
-# New in 2.1
-executors:
-  default:
-    docker:
-      - image: *base_image
-    working_directory: *working_directory
-  macos:
-    macos:
-      xcode: "10.1.0"
-    working_directory: *working_directory
-    shell: /bin/bash --login
-  windows:
-    machine:
-      resource_class: windows.medium
-      image: "windows-server-2019:201908-06"
-      shell: bash
+    default_config: &default_config
+        docker:
+            - image: *base_image
+        working_directory: *working_directory
 
 jobs:
-  echo:
-    executor: windows
-    steps:
-      - checkout
-      - run: sleep 100s
-  compare:
-    executor: macos
-    environment:
-      PROMPT_COMMAND: ""
-    steps:
-      - checkout
-      - run: ./test.sh
-  test:
-    executor: default
-    steps:
-      - checkout
-      - run: echo "Tests"
-  e2e_test:
-    executor: default
-    steps:
-      - checkout
-      - run: echo "E2E Tests"
-  nightly_image_build:
-    executor: default
-    steps:
-      - checkout
-      - run: echo "Build test Docker images"
-      - run: echo $HELLO
+    build:
+        docker:
+            - image: *base_image
+        working_directory: *working_directory
+        steps:
+            - checkout
+            - run:
+                command: echo "hello"
+            - run:
+                command: go run main.go
 
-# Multiple workflows defined with different triggers. `btd` triggers on commit, `e2e` triggers on an API call with the `trigger_e2e` parameter set to true, and `nightly` is triggered on a scheduled cron timer.
-# https://circleci.com/docs/2.0/configuration-reference/#workflows
+
 workflows:
+    version: 2
     btd:
-      jobs:
-        - echo
+        jobs:
+            - build
